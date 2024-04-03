@@ -12,4 +12,6 @@ public interface IProductService {
 	public ResponseEntity<ProductResponseRest> findById(Long id);
 	
 	public ResponseEntity<ProductResponseRest> findByName(String name);
+	
+	public ResponseEntity<ProductResponseRest> deleteById(Long id);
 }

@@ -119,10 +119,10 @@ public class ProductServiceImpl implements IProductService {
 					p.setPicture(imageDescompress);
 					list.add(p);
 				}
-				
+
 				response.getProduct().setProducts(list);
 				response.setMetadata("Respuesta ok", "00", "Productos encontrados");
-				
+
 			} else {
 				response.setMetadata("Respuesta invalida", "-1", "Productos no encontrados");
 				return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
@@ -135,6 +135,27 @@ public class ProductServiceImpl implements IProductService {
 		}
 
 		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<ProductResponseRest> deleteById(Long id) {
+
+		ProductResponseRest response = new ProductResponseRest(); // Objeto de respuesta del producto
+
+		try {
+
+			// Delete product by id
+			productDao.deleteById(id);
+			response.setMetadata("Respuesta ok", "00", "Producto eliminado");
+
+		} catch (Exception e) {
+			e.getStackTrace();
+			response.setMetadata("Respuesta incorrecta", "-1", "Error al eliminar producto");
+			return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+
 	}
 
 }
