@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,9 +89,41 @@ public class ProductResController {
 		return response;
 	}
 
+	/**
+	 * find all products
+	 * @return
+	 */
 	@GetMapping("/products")
 	public ResponseEntity<ProductResponseRest> findAll() {
 		ResponseEntity<ProductResponseRest> response = service.findAll();
 		return response;
 	}
+	
+	
+	/**
+	 * update product
+	 * @param picture
+	 * @param name
+	 * @param price
+	 * @param stock
+	 * @param category
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	@PutMapping("/products/{id}")
+	public ResponseEntity<ProductResponseRest> update(@RequestParam("picture") MultipartFile picture,
+			@RequestParam("name") String name, @RequestParam("price") int price, @RequestParam("stock") int stock,
+			@RequestParam("category") long category, @PathVariable Long id) throws IOException {
+
+		Product product = new Product();
+		product.setName(name);
+		product.setPrice(price);
+		product.setStock(stock);
+		product.setPicture(ImageConverter.compressZLib(picture.getBytes()));
+
+		ResponseEntity<ProductResponseRest> response = service.update(product, category, id);
+		return response;
+	}
+
 }
