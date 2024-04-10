@@ -1,5 +1,7 @@
 package com.company.inventory.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.inventory.model.Category;
 import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.services.ICategoryService;
+import com.company.inventory.utils.CategoryExcelExporter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
@@ -69,4 +73,28 @@ public class CategoryRestController {
 		ResponseEntity<CategoryResponseRest> response = service.deleteById(id);
 		return response;
 	}
+
+	/**
+	 * Export to excel file
+	 * 
+	 * @param response
+	 * @throws IOException
+	 */
+	@GetMapping("/categories/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+
+		response.setContentType("application/octet-stream");
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename= result_categories.xlsx";
+		response.setHeader(headerKey, headerValue);
+
+		ResponseEntity<CategoryResponseRest> categoryResponse = service.search();
+
+		CategoryExcelExporter excelExporter = new CategoryExcelExporter(
+				categoryResponse.getBody().getCategoryResponse().getCategory());
+
+		excelExporter.export(response);
+	}
+
 }
